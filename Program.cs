@@ -12,7 +12,8 @@
             Console.WriteLine("Wybierz daną opcję i naciśnij Enter");
             Console.WriteLine("1. Start Quiz");
             Console.WriteLine("2. Pokaz najwyzszy wynik");
-            Console.WriteLine("3. Wychodze");
+            Console.WriteLine("3. Pokaz listę wyników");
+            Console.WriteLine("4. Wychodze");
             Console.Write("Twój wybór: ");
             int choice = Convert.ToInt32(Console.ReadLine());
 
@@ -29,6 +30,9 @@
                     Console.WriteLine("Najwyzszy wynik: " + highestScore);
                     break;
                 case 3:
+                    ShowScores();
+                    break;
+                case 4:
                     repeatQuiz = false;
                     break;
                 default:
@@ -44,13 +48,20 @@
     static int StartQuiz()
     {
         List<Question> questions = LoadQuestionsFromFile("quiz.txt");
+        List<int> answeredQuestions = new List<int>();  // Lista indeksów pytań, na które udzielono odpowiedzi
         int score = 0;
-        int questionNumber = 1; // Dodaj zmienną licznikową
+        int questionNumber = 1;
 
-        foreach (Question question in questions)
+        // Przetasowanie pytań
+        Przetasowanie(questions);
+
+        Question question = null;  // Linia dodana
+
+        foreach (Question q in questions)
         {
+            question = q;  // Linia dodana
             Console.Clear();
-            Console.WriteLine("Pytanie " + questionNumber + ": " + question.Text); // Wyświetl numer pytania
+            Console.WriteLine("Pytanie " + questionNumber + ": " + question.Text);
             Console.WriteLine("1. " + question.Answer1);
             Console.WriteLine("2. " + question.Answer2);
             Console.WriteLine("3. " + question.Answer3);
@@ -67,15 +78,59 @@
                 score++;
             }
 
+            // Zapisz indeks odpowiedzi w liście answeredQuestions
+            answeredQuestions.Add(answer);
+
             Console.WriteLine("Naciśnij dowolny przycisk, aby kontynuować...");
             Console.ReadKey();
 
-            questionNumber++; // Zwiększ numer pytania
+            questionNumber++;
         }
 
         Console.WriteLine("Quiz zakończony!");
         Console.WriteLine("Liczba poprawnych odpowiedzi: " + score);
+        Console.ReadKey(); // Linia dodana dla wygody testowania
+        Console.Clear();
+
+        // Wyświetlenie pytań i odpowiedzi
+        Console.WriteLine("Pytania i odpowiedzi:");
+
+        for (int i = 0; i < questions.Count; i++)
+        {
+            Console.WriteLine($"Pytanie {i + 1}: {questions[i].Text}");
+
+            Console.WriteLine($"1. {questions[i].Answer1}");
+            Console.WriteLine($"2. {questions[i].Answer2}");
+            Console.WriteLine($"3. {questions[i].Answer3}");
+            Console.WriteLine($"4. {questions[i].Answer4}");
+
+            // Użyj poprawionej funkcji GetAnswerLabel
+            Console.WriteLine($"Poprawna odpowiedź: {GetAnswerLabel(questions[i], questions[i].CorrectAnswer)}");
+            Console.WriteLine($"Twoja odpowiedź: {GetAnswerLabel(question, answeredQuestions[i].ToString())}");
+
+            Console.WriteLine();
+        }
+
+        // Pobranie imienia gracza
+        Console.Write("Podaj swoje imię: ");
+        string playerName = Console.ReadLine();
+
+        // Zapis wyniku do pliku
+        SaveScoreToFile(playerName, score);
+
         return score;
+    }
+    // Poprawiona sygnatura funkcji GetAnswerLabel
+    static string GetAnswerLabel(Question question, string answerIndex)
+    {
+        switch (answerIndex)
+        {
+            case "1": return $"{question.Answer1}";
+            case "2": return $"{question.Answer2}";
+            case "3": return $"{question.Answer3}";
+            case "4": return $"{question.Answer4}";
+            default: return "Nie udzielono odpowiedzi";
+        }
     }
 
     static List<Question> LoadQuestionsFromFile(string filePath)
@@ -116,6 +171,53 @@
         return questions;
     }
 
+    static void ShowScores()
+    {
+        try
+        {
+            string[] scores = File.ReadAllLines("rekord.txt");
+
+            Console.WriteLine("Lista wyników:");
+            foreach (string score in scores)
+            {
+                Console.WriteLine(score);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error podczas ładowania wyników: " + ex.Message);
+        }
+    }
+
+    static void SaveScoreToFile(string playerName, int score)
+    {
+        try
+        {
+            using (StreamWriter writer = new StreamWriter("rekord.txt", true))
+            {
+                writer.WriteLine(playerName + ": " + score);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error podczas zapisywania wyniku: " + ex.Message);
+        }
+    }
+
+    static void Przetasowanie<T>(List<T> list) // Przetasowanie Fishera-Yatesa
+    {
+        Random random = new Random();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
+
     class Question
     {
         public int Id { get; set; }
@@ -137,4 +239,5 @@
             Answer4 = answer4;
         }
     }
-}
+}
+
