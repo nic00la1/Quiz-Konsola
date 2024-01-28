@@ -45,16 +45,17 @@
     {
         List<Question> questions = LoadQuestionsFromFile("quiz.txt");
         int score = 0;
+        int questionNumber = 1; // Dodaj zmienną licznikową
 
         foreach (Question question in questions)
         {
             Console.Clear();
-            Console.WriteLine("Pytanie: " + question.Text);
+            Console.WriteLine("Pytanie " + questionNumber + ": " + question.Text); // Wyświetl numer pytania
             Console.WriteLine("1. " + question.Answer1);
             Console.WriteLine("2. " + question.Answer2);
             Console.WriteLine("3. " + question.Answer3);
             Console.WriteLine("4. " + question.Answer4);
-            Console.Write("Podaj swoja odpowiedz (1-4): ");
+            Console.Write("Podaj swoją odpowiedź (1-4): ");
             int answer = Convert.ToInt32(Console.ReadLine());
             if (answer < 1 || answer > 4)
             {
@@ -66,11 +67,13 @@
                 score++;
             }
 
-            Console.WriteLine("Nacisnij jakikolwiek przycisk, by kontynuowac...");
+            Console.WriteLine("Naciśnij dowolny przycisk, aby kontynuować...");
             Console.ReadKey();
+
+            questionNumber++; // Zwiększ numer pytania
         }
 
-        Console.WriteLine("Quiz zakonczony!");
+        Console.WriteLine("Quiz zakończony!");
         Console.WriteLine("Liczba poprawnych odpowiedzi: " + score);
         return score;
     }
