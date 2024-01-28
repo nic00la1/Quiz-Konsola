@@ -45,10 +45,31 @@
         }
     }
 
+    // Dodana funkcja wyświetlająca pytania i odpowiedzi po zakończeniu quizu
+    static void ShowQuizResults(List<Question> questions, List<int> answeredQuestions)
+    {
+        Console.WriteLine("Pytania i odpowiedzi:");
+
+        for (int i = 0; i < questions.Count; i++)
+        {
+            Console.WriteLine($"Pytanie {i + 1}: {questions[i].Text}");
+
+            Console.WriteLine($"1. {questions[i].Answer1} {(answeredQuestions[i] == 0 ? "(Twoja odpowiedź)" : "")}");
+            Console.WriteLine($"2. {questions[i].Answer2} {(answeredQuestions[i] == 1 ? "(Twoja odpowiedź)" : "")}");
+            Console.WriteLine($"3. {questions[i].Answer3} {(answeredQuestions[i] == 2 ? "(Twoja odpowiedź)" : "")}");
+            Console.WriteLine($"4. {questions[i].Answer4} {(answeredQuestions[i] == 3 ? "(Twoja odpowiedź)" : "")}");
+
+            Console.WriteLine($"Poprawna odpowiedź: {GetAnswerLabel(questions[i], int.Parse(questions[i].CorrectAnswer))}");
+
+            Console.WriteLine();
+        }
+    }
+
     static int StartQuiz()
     {
         List<Question> questions = LoadQuestionsFromFile("quiz.txt");
         List<int> answeredQuestions = new List<int>();  // Lista indeksów pytań, na które udzielono odpowiedzi
+
         int score = 0;
         int questionNumber = 1;
 
@@ -79,7 +100,7 @@
             }
 
             // Zapisz indeks odpowiedzi w liście answeredQuestions
-            answeredQuestions.Add(answer);
+            answeredQuestions.Add(answer - 1); // Subtract 1 to get the index (0-3) corresponding to options 1-4
 
             Console.WriteLine("Naciśnij dowolny przycisk, aby kontynuować...");
             Console.ReadKey();
@@ -92,24 +113,8 @@
         Console.ReadKey(); // Linia dodana dla wygody testowania
         Console.Clear();
 
-        // Wyświetlenie pytań i odpowiedzi
-        Console.WriteLine("Pytania i odpowiedzi:");
-
-        for (int i = 0; i < questions.Count; i++)
-        {
-            Console.WriteLine($"Pytanie {i + 1}: {questions[i].Text}");
-
-            Console.WriteLine($"1. {questions[i].Answer1}");
-            Console.WriteLine($"2. {questions[i].Answer2}");
-            Console.WriteLine($"3. {questions[i].Answer3}");
-            Console.WriteLine($"4. {questions[i].Answer4}");
-
-            // Użyj poprawionej funkcji GetAnswerLabel
-            Console.WriteLine($"Poprawna odpowiedź: {GetAnswerLabel(questions[i], questions[i].CorrectAnswer)}");
-            Console.WriteLine($"Twoja odpowiedź: {GetAnswerLabel(question, answeredQuestions[i].ToString())}");
-
-            Console.WriteLine();
-        }
+        // Wyświetlenie pytań i odpowiedzi po zakończeniu quizu
+        ShowQuizResults(questions, answeredQuestions);
 
         // Pobranie imienia gracza
         Console.Write("Podaj swoje imię: ");
@@ -120,15 +125,16 @@
 
         return score;
     }
+
     // Poprawiona sygnatura funkcji GetAnswerLabel
-    static string GetAnswerLabel(Question question, string answerIndex)
+    static string GetAnswerLabel(Question question, int answerIndex)
     {
         switch (answerIndex)
         {
-            case "1": return $"{question.Answer1}";
-            case "2": return $"{question.Answer2}";
-            case "3": return $"{question.Answer3}";
-            case "4": return $"{question.Answer4}";
+            case 1: return question.Answer1;
+            case 2: return question.Answer2;
+            case 3: return question.Answer3;
+            case 4: return question.Answer4;
             default: return "Nie udzielono odpowiedzi";
         }
     }
