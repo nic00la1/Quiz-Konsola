@@ -1,4 +1,11 @@
-﻿class Quiz
+﻿/********************************
+klasa: Quiz
+opis: Główna klasa programu quizowego, zarządza logiką quizu i interakcją z użytkownikiem.
+pola: repeatQuiz, highestScore
+autor: Nicola
+********************************/
+
+class Quiz
 {
     static void Main(string[] args)
     {
@@ -45,7 +52,12 @@
         }
     }
 
-    // Dodana funkcja wyświetlająca pytania i odpowiedzi po zakończeniu quizu
+    /********************************
+    funkcja: ShowQuizResults
+    opis: Wyświetla pytania i odpowiedzi po zakończeniu quizu.
+    parametry: questions - lista pytań, answeredQuestions - lista indeksów odpowiedzi użytkownika
+    autor: Nicola
+    ********************************/
     static void ShowQuizResults(List<Question> questions, List<int> answeredQuestions)
     {
         Console.WriteLine("Pytania i odpowiedzi:");
@@ -65,6 +77,13 @@
         }
     }
 
+
+    /********************************
+    funkcja: StartQuiz
+    opis: Rozpoczyna nową grę quizową, przeprowadzając użytkownika przez pytania.
+    zwraca: Liczbę poprawnych odpowiedzi.
+    autor: Nicola
+    ********************************/
     static int StartQuiz()
     {
         List<Question> questions = LoadQuestionsFromFile("quiz.txt");
@@ -224,6 +243,13 @@
         }
     }
 
+
+    /********************************
+    klasa: Question
+    opis: Klasa reprezentująca pojedyncze pytanie w quizie.
+    pola: Id, Text, CorrectAnswer, Answer1, Answer2, Answer3, Answer4
+    autor: Nicola
+    ********************************/
     class Question
     {
         public int Id { get; set; }
